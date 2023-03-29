@@ -10,7 +10,7 @@ export default function handler(req, res) {
       //socket.broadcast.emit("User connected");
       socket.on("message", (message) => {
         console.log(message);
-        //io.emit('message', '${message}')
+        io.emit('message', '${message}')
       });
     });
   } else {

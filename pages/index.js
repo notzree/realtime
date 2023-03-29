@@ -28,11 +28,14 @@ export default function Home({ sessionData }) {
   useEffect( () => {
   handleSocket()
   },[])
+
   const handleMessage = (e)=>{
     e.preventDefault()
-    const data = e.target.messageInput.value;
-    socket.emit('message', data)
+    const msg = e.target.messageInput.value;
+    setMessages([...messages, msg]);
+    socket.emit('message', msg);
   }
+  
   console.log("test",messages);
   return (
     <>
