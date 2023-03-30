@@ -7,10 +7,8 @@ export default function handler(req, res) {
     res.socket.server.io = io
     io.on("connection", (socket) => {
       console.log("User Connected");
-      //socket.broadcast.emit("User connected");
-      socket.on("message", (message) => {
-        console.log(message);
-        io.emit('message', '${message}')
+      socket.on("messageChange", (message) => {
+      socket.broadcast.emit('messageSend', message)
       });
     });
   } else {

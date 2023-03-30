@@ -11,19 +11,21 @@ const inter = Inter({ subsets: ["latin"] });
 let socket;
 export default function Home({ sessionData }) {
   const session = JSON.parse(sessionData);
-  const [messages, setMessages] = useState("")
+  const [messages, setMessages] = useState([])
+  const [input, setInput] = useState('');
 
   const handleSocket = async ()=>{
-    const response =  fetch('/api/socket')
+    await fetch('/api/socket')
     
     socket = io()
     socket.once('connect', ()=>{
       console.log("Client connected")
     })
 
-    socket.on('message', msg=>{
-      setMessages(...messages, msg)
-    })
+    socket.on('messageSend', (msg)=>{
+      console.log("using setmessage from receiving end")
+      setMessages(oldMessages=>[...oldMessages, msg]);
+    })  
   }
   useEffect( () => {
   handleSocket()
@@ -31,12 +33,14 @@ export default function Home({ sessionData }) {
 
   const handleMessage = (e)=>{
     e.preventDefault()
-    const msg = e.target.messageInput.value;
-    setMessages([...messages, msg]);
-    socket.emit('message', msg);
+    const msg = input
+    console.log("using setmessage from sending-end")
+    socket.emit('messageChange', msg);
+    //setMessages(oldMessages=>[...oldMessages, msg]);
+    setInput("")
   }
   
-  console.log("test",messages);
+ //console.log("messages",messages);
   return (
     <>
       <Head>
@@ -52,12 +56,22 @@ export default function Home({ sessionData }) {
 
         </div>
         <div className=" h-screen w-screen flex justify-center items-center">
+        <ul>
+            {
+              messages?.map((m)=>(
+                <li>
+                  {m}
+                </li>
+              ))
+            }
+          </ul>
         </div>
         <div className="flex justify-center items-center">
+          
           <div className="fixed bottom-0 mb-[12rem] ">
 
             <form className="form-control" onSubmit={handleMessage}>
-            <input id="messageInput" name="messageInput" type="text" placeholder="Type here" class="h-auto min-h-12 input w-[50rem]" />
+            <input id="messageInput" name="messageInput" type="text" placeholder="Type here" value = {input} onChange = {(e)=>setInput(e.target.value)}  class="h-auto min-h-12 input w-[50rem]" />
             </form>
           </div>
         </div>
